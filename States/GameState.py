@@ -780,6 +780,38 @@ class GameState(State):
         #       # Apply that Joker’s effect
         #       self.activated_jokers.add("joker card name")
         #   The last line ensures the Joker is visibly active and its effects are properly applied.
+        if "The Joker" in owned:
+            # applies +4 Multiplier
+            self.activated_jokers.add("The Joker")
+        if "Micheal Myers" in owned:
+            # Adds a random multiplier between 0 and 23
+            self.activated_jokers.add("Micheal Myers")
+        if "Fibonacci" in owned:
+            # Each played Ace,2,3,5,8 gives +8 Mult
+            self.activated_jokers.add("Fibonacci")
+        if "Gauntlet" in owned:
+            # +250 Chips, -2 hand size
+            self.activated_jokers.add("Gauntlet")
+        if "Orge" in owned:
+            # +3 Mult for each owned Joker (treat as number of jokers owned)
+            self.activated_jokers.add("Orge")
+        if "Straw Hat" in owned:
+            # +100 Chips then -5 chips for every hand already played this round
+            self.activated_jokers.add("Straw Hat")
+        if "Hog Rider" in owned:
+            # +100 Chips if the played hand is a Straight
+            self.activated_jokers.add("Hog Ride")
+        if "? Block" in owned:
+            # +4 Chips if the played hand used exactly 4 cards
+            self.activated_jokers.add("? Block")
+        if "Hogwarts" in owned:
+            # Each Ace played gives +4 mult and +20 chips
+            self.activated_jokers.add("Hogwarts")
+        if "802" in owned:
+            # If this is the last hand (amountOfHands == 0
+            # after decrement above), double the added
+            # amount
+            self.activated_jokers.add("802")
 
         procrastinate = False
 
