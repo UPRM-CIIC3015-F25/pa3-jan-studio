@@ -28,6 +28,12 @@ class PlanetCard:
 #   Include all planets up to "Sun" to complete the set.
 #   These cards will be used in the shop and gameplay systems to upgrade specific poker hands.
 
-PLANETS = {
-
-}
+PLANETS = { "Mercury" : PlanetCard("Mercury" ,"Increases High Card hand value", 2, 10, 1 ),
+            "Venus" : PlanetCard("Venus","Increases One Pair hand value", 2, 15 , 1 ),
+            "Earth" : PlanetCard("Earth" ,"Increases Two Pair hand value", 2, 15, 2 ),
+            "Mars" : PlanetCard("Mars" ,"Increases Three of a Kind hand value", 2, 25, 2 ),
+            "Jupiter": PlanetCard("Jupiter", "Increases Straight hand value", 3,25,3),
+            "Saturn": PlanetCard("Saturn", "Increases Flush hand value", 3,30,3),
+            "Uranus": PlanetCard("Uranus", "Increases Full House hand value", 3, 35, 3 ),
+            "Neptune": PlanetCard("Neptune", "Increases Four of a Kind",3,40,4),
+            "Sun": PlanetCard("Sun", "Increases all hands value", 12, 30, 2) }
