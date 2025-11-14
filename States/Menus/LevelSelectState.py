@@ -116,6 +116,12 @@ class LevelSelectState(State):
         #   what unique restriction or ability that boss applies during the round.
         #   This dictionary will later be used to look up and apply special effects based on which boss is active.
         boss_abilities = {
+            "The Mark": "All Face cards are drawn face down",
+            "The Needle": "Play only 1 hand",
+            "The House": "First hand is drawn face down",
+            "The Hook": "Discards 2 random cards held in hand after every played hand",
+            "The Water": "Start with 0 discards",
+            "The Manacle": "-1 hand size"
 
         }
 
