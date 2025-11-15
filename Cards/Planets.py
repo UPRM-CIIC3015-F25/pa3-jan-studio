@@ -35,5 +35,5 @@ PLANETS = { "Mercury" : PlanetCard("Mercury" ,"Increases High Card hand value", 
             "Jupiter": PlanetCard("Jupiter", "Increases Straight hand value", 3,25,3),
             "Saturn": PlanetCard("Saturn", "Increases Flush hand value", 3,30,3),
             "Uranus": PlanetCard("Uranus", "Increases Full House hand value", 3, 35, 3 ),
-            "Neptune": PlanetCard("Neptune", "Increases Four of a Kind",3,40,4),
+            "Neptune": PlanetCard("Neptune", "Increases Four of a Kind hand value",3,40,4),
             "Sun": PlanetCard("Sun", "Increases all hands value", 12, 30, 2) }
