@@ -95,13 +95,13 @@ class LevelSelectState(State):
                 if boss:
                     if boss == "The Water":
                         PlayerInfo.amountOfDiscards = 0 #Start with 0 discards
-                    elif boss == "The Mark":
+                    #elif boss == "The Mark":
                         #All Face cards are drawn face down
-                    elif boss == "The House":
+                    #elif boss == "The House":
                         #First hand is drawn face down
-                    elif boss == "The Hook":
+                    #elif boss == "The Hook":
                         #Discards 2 random cards held in hand after every played hand
-                    elif boss == "The Manacle":
+                    #elif boss == "The Manacle":
                         #-1 hand size
                     elif boss == "The Needle":
                         PlayerInfo.amountOfHands = 1 #Play only 1 hand
