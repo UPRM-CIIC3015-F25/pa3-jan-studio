@@ -93,6 +93,7 @@ class LevelSelectState(State):
                 #   Avoid unnecessary repetition—use clear condition structure to make the logic readable.
                 boss = SubLevel.bossLevel
                 if boss:
+                    print("Entered bossLevel logic Task 9.2")
                     if boss == "The Water":
                         PlayerInfo.amountOfDiscards = 0 #Start with 0 discards
                     #elif boss == "The Mark":
