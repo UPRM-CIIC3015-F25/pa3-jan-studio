@@ -2,6 +2,7 @@ import pygame
 from Deck.DeckManager import DeckManager
 from States.Core.StateClass import State
 from States.Core.PlayerInfo import PlayerInfo
+from Levels.SubLevel import SubLevel
 
 class LevelSelectState(State):
     def __init__(self, playerInfo: PlayerInfo = None, nextState: str = "", deckManager: DeckManager = None):
@@ -90,6 +91,22 @@ class LevelSelectState(State):
                 #   on which boss is active.
                 #   Finally, make sure to reset the player’s round score to 0 at the end of this setup.
                 #   Avoid unnecessary repetition—use clear condition structure to make the logic readable.
+                boss = SubLevel.bossLevel
+                if boss:
+                    if boss == "The Water":
+                        PlayerInfo.amountOfDiscards = 0 #Start with 0 discards
+                    elif boss == "The Mark":
+                        #All Face cards are drawn face down
+                    elif boss == "The House":
+                        #First hand is drawn face down
+                    elif boss == "The Hook":
+                        #Discards 2 random cards held in hand after every played hand
+                    elif boss == "The Manacle":
+                        #-1 hand size
+                    elif boss == "The Needle":
+                        PlayerInfo.amountOfHands = 1 #Play only 1 hand
+
+                
                 self.playerInfo.roundScore = 0
                 
                 # Set target score for the new sublevel
