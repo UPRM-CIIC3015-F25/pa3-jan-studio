@@ -5,7 +5,7 @@ from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
-
+from testing.bonus import bonus, calculate_gold_rewards
 
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
@@ -539,11 +539,26 @@ class GameState(State):
         print(playerInfo.score)
         print(playerInfo.roundScore)
         print(stage)
-        target_score = playerInfo.score #SMALL=300, BIG=600, BOSS=900
-        player_score = playerInfo.roundScore #Total score after player finishes a round
-        #Return: combined reward
-        if target_score >= player_score:
-            player_score = player_score - target_score
+        return None
+        target_score = playerInfo.score  # SMALL=300, BIG=600, BOSS=900
+        player_score = playerInfo.roundScore  # Total score after player finishes a round
+        base_reward = 0
+        # Stage 1: Base Reward
+        # Stage 2: Bonus
+        # Base Case 3: Total
+
+        # Bonus
+        if player_score > target_score:
+            return bonus(player_score, target_score) + self.calculate_gold_reward(self, playerInfo, )
+        else:
+            # Base Rewards
+            if stage == 0:  # [0] = SMALL
+                base_reward = 4
+            if stage == 1:  # [1] = BIG
+                base_reward = 8
+            if stage == 2:  # [2] = BOSS
+                base_reward = 10
+            return base_reward
 
 
     def updateCards(self, posX, posY, cardsDict, cardsList, scale=1.5, spacing=90, baseYOffset=-20, leftShift=40):
