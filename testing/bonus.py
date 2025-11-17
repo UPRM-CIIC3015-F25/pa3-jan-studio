@@ -1,3 +1,5 @@
+#REMEMBER TO SET THIS TO GITIGNORE
+
 def bonus(score, target):
     x = max(0,(((score-target)/target)*5))
     result = min(5,x)
