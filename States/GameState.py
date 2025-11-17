@@ -5,7 +5,7 @@ from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
-
+from testing.bonus import bonus, calculate_gold_rewards
 
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
@@ -27,16 +27,16 @@ class GameState(State):
         self.deck = State.deckManager.shuffleDeck(State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel))
         self.hand = State.deckManager.dealCards(self.deck, 8)
         self.cards = {}
-        
+
         self.jokerDeck = State.deckManager.createJokerDeck()
         self.playerJokers = []
         self.jokers = {}
         # track which jokers activated for the current played hand (used to offset their draw)
         self.activated_jokers = set()
-        
+
         # for joker in self.jokerDeck:
         #     print(joker.name)
-        
+
         self.cardsSelectedList = []
         self.cardsSelectedRect = {}
         self.playedHandNameList = ['']
@@ -187,7 +187,7 @@ class GameState(State):
             self.nextState = "ShopState"
 
             return
-        
+
         # Handle boss level music switching
         bossName = self.playerInfo.levelManager.curSubLevel.bossLevel
         if bossName and not self.isBossActive:
@@ -196,7 +196,7 @@ class GameState(State):
         elif not bossName and self.isBossActive:
             self.isBossActive = False
             self.switchToNormalTheme()
-            
+
         # Handle play hand timing
         if self.playHandActive and self.playHandStartTime > 0:
             curTime = pygame.time.get_ticks()
@@ -535,16 +535,14 @@ class GameState(State):
     #     - A clear base case to stop recursion when all parts are done
     #   Avoid any for/while loops — recursion alone must handle the repetition.
     def calculate_gold_reward(self, playerInfo, stage=0):
-            print("Entered calculate_gold_reward")
-            print(f'Target Score: {playerInfo.score}')
-            print(f'Player Score: {playerInfo.roundScore}')
-            print(stage)
-            if stage == 0:
-                return 4
-            if stage == 1:
-                return 8
-            if stage == 2:
-                return 10
+        print("Entered calculate_gold_reward")
+        print(playerInfo.score)
+        print(playerInfo.roundScore)
+        print(stage)
+        target_score = playerInfo.score  # SMALL=300, BIG=600, BOSS=900
+        player_score = playerInfo.roundScore  # Total score after player finishes a round
+
+
 
     def updateCards(self, posX, posY, cardsDict, cardsList, scale=1.5, spacing=90, baseYOffset=-20, leftShift=40):
         cardsDict.clear()
