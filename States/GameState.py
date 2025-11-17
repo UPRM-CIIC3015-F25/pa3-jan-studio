@@ -536,7 +536,8 @@ class GameState(State):
     #   Avoid any for/while loops — recursion alone must handle the repetition.
     def calculate_gold_reward(self, playerInfo, stage=0):
             print("Entered calculate_gold_reward")
-            print(playerInfo)
+            print(f'Target Score: {playerInfo.score}')
+            print(f'Player Score: {playerInfo.roundScore}')
             print(stage)
             if stage == 0:
                 return 4
