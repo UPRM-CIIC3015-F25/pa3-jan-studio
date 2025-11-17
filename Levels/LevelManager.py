@@ -41,7 +41,7 @@ class LevelManager():
         if self.curSubLevel and not self.curSubLevel.finished:  # Check if current sublevel is finished
             if self.p.roundScore >= self.curSubLevel.score:     # If player's round score meets or exceeds sublevel score requirement
                 self.curSubLevel.finished = True
-                self.p.roundScore = 0
+                # self.p.roundScore = 0 #This was commented out because it interfered with calculate_gold_reward()
                 if self.next_unfinished_sublevel() is None:  # Check if all sublevels in the current ante are finished
                     self.p.playerAnte += 1
                     # If no more levels exist, set playerWins to True
