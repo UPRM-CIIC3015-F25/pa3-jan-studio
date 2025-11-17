@@ -580,7 +580,7 @@ class GameState(State):
                     elif suit_i == suit_j and i_card.rank.value > j_card.rank.value:
                         swap = True
                 elif sort_by == 'rank':
-                    if i_card.rank.value > j_card.rank.value:
+                    if i_card.rank.value < j_card.rank.value:
                         swap = True
                     elif i_card.rank == j_card.rank and suit_i > suit_j:
                         swap = True
