@@ -64,5 +64,5 @@ class LevelManager():
         self.curLevel = self.levelsDict[self.p.playerAnte]
         print(index)
         print(self.curLevel[index])
-        return self.curLevel[1]
+        return self.curLevel[1] #test return
     
