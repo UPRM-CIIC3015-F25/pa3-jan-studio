@@ -1,2 +1,12 @@
-/.idea/
-.idea/workspace.xml
+# Default ignored files
+workspace.xml/
+.idea/
+
+#Pycache
+Cards/__pycache__/
+Deck/__pycache__/
+Levels/__pycache__/
+States/__pycache__/
+States/Core/__pycache__/
+States/Menus/__pycache__/
+testing/__pycache__/
