@@ -539,7 +539,7 @@ class GameState(State):
         print(playerInfo.score)
         print(playerInfo.roundScore)
         print(stage)
-        return None
+        return 0
         target_score = playerInfo.score  # SMALL=300, BIG=600, BOSS=900
         player_score = playerInfo.roundScore  # Total score after player finishes a round
         base_reward = 0
