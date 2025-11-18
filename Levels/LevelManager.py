@@ -61,5 +61,8 @@ class LevelManager():
         print("Entered next_unfinished_sublevel")
         print(index)
         print(self.levelsDict[self.p.playerAnte][index].blind) # Returns current round (SMALL, BIG, BOSS)
-        return None
+        if self.levelsDict[self.p.playerAnte][index].finished == True:
+            return self.next_unfinished_sublevel(index+1)
+        else:
+            return self.levelsDict[self.p.playerAnte][index]
     
