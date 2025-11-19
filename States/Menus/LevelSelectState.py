@@ -3,6 +3,7 @@ from Deck.DeckManager import DeckManager
 from States.Core.StateClass import State
 from States.Core.PlayerInfo import PlayerInfo
 from Levels.SubLevel import SubLevel
+from States.GameState import GameState
 
 class LevelSelectState(State):
     def __init__(self, playerInfo: PlayerInfo = None, nextState: str = "", deckManager: DeckManager = None):
@@ -95,22 +96,15 @@ class LevelSelectState(State):
                 
                 if nxt.blind == nxt.blind.BOSS:
                     boss = nxt.bossLevel
-                    print(boss)
-                    print("Entered bossLevel logic Task 9.2")
+                    print(f'Entering Boss Level: {boss}/n Applying debuffs...')
                     if boss == "The Water":
-                        print("The Water is boss")
-                        self.playerInfo.amountOfDiscards = 0
-                    #elif boss == "The Mark":
-                        #All Face cards are drawn face down
-                    #elif boss == "The House":
-                        #First hand is drawn face down
-                    #elif boss == "The Hook":
-                        #Discards 2 random cards held in hand after every played hand
-                    #elif boss == "The Manacle":
-                        #-1 hand size
+                        self.playerInfo.amountOfDiscards = 0 #No discards
+                    elif boss == "The Manacle":
+                        self.playerInfo.amountOfHands = 3 #-1 hand size
                     elif boss == "The Needle":
-                        PlayerInfo.amountOfHands = 1 #Play only 1 hand
-
+                        self.playerInfo.amountOfHands = 1 #Play only 1 hand
+                    # 'The Mark', 'The House', 'The Hook' debuffs are already 
+                    # handled by DeckManager.py and GameState.py for 'The Hook'
                 
                 self.playerInfo.roundScore = 0
                 

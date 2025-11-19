@@ -549,8 +549,8 @@ class GameState(State):
         if stage == 1:
             target_score = playerInfo.score
             player_score = playerInfo.roundScore
-            overkill = max(0, (player_score - target_score)//target_score * 5)
-            bonus = min(5, overkill)
+            overkill = max(0, round(((player_score - target_score)/target_score * 5), 0))
+            bonus = min(5, int(overkill))
             print(bonus)
             return bonus + self.calculate_gold_reward(playerInfo, stage=2)
         if stage == 2:
