@@ -60,8 +60,10 @@ class LevelManager():
     def next_unfinished_sublevel(self, index=0):
         #Input: Index of levelsDict
         #Output: Some item of the list of levels for an Ante?
-        print("Entered next_unfinished_sublevel")
-        if self.levelsDict[self.p.playerAnte][index].finished == True:
+        currentAnte = self.levelsDict[self.p.playerAnte]
+        if index >= len(currentAnte):
+            return None
+        if currentAnte[index].finished == True:
             return self.next_unfinished_sublevel(index+1)
         else:
-            return self.levelsDict[self.p.playerAnte][index]    
+            return currentAnte[index]

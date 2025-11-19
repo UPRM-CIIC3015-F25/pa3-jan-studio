@@ -86,27 +86,30 @@ class LevelSelectState(State):
 
                 # If there's a next sublevel, set it as current
                 lm.curSubLevel = nxt
-                print(nxt.blind.name)
+                print(nxt.blind.name) #debug Print to confirm on which SubLevel the game is.
                 # TODO (TASK 9.2) - Adjust player limits and reset values based on the current Boss Blind.
                 #   Implement conditional logic that modifies the player's hand and discard limits depending
                 #   on which boss is active.
                 #   Finally, make sure to reset the player’s round score to 0 at the end of this setup.
                 #   Avoid unnecessary repetition—use clear condition structure to make the logic readable.
-                # # boss = SubLevel.bossLevel
-                # if boss:
-                #     print("Entered bossLevel logic Task 9.2")
-                #     if boss == "The Water":
-                #         PlayerInfo.amountOfDiscards = 0 #Start with 0 discards
-                #     #elif boss == "The Mark":
-                #         #All Face cards are drawn face down
-                #     #elif boss == "The House":
-                #         #First hand is drawn face down
-                #     #elif boss == "The Hook":
-                #         #Discards 2 random cards held in hand after every played hand
-                #     #elif boss == "The Manacle":
-                #         #-1 hand size
-                #     elif boss == "The Needle":
-                #         PlayerInfo.amountOfHands = 1 #Play only 1 hand
+                
+                if nxt.blind == nxt.blind.BOSS:
+                    boss = nxt.bossLevel
+                    print(boss)
+                    print("Entered bossLevel logic Task 9.2")
+                    if boss == "The Water":
+                        print("The Water is boss")
+                        self.playerInfo.amountOfDiscards = 0
+                    #elif boss == "The Mark":
+                        #All Face cards are drawn face down
+                    #elif boss == "The House":
+                        #First hand is drawn face down
+                    #elif boss == "The Hook":
+                        #Discards 2 random cards held in hand after every played hand
+                    #elif boss == "The Manacle":
+                        #-1 hand size
+                    elif boss == "The Needle":
+                        PlayerInfo.amountOfHands = 1 #Play only 1 hand
 
                 
                 self.playerInfo.roundScore = 0
