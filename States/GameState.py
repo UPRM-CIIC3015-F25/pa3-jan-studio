@@ -535,22 +535,26 @@ class GameState(State):
     #   Avoid any for/while loops — recursion alone must handle the repetition.
     def calculate_gold_reward(self, playerInfo, stage=0):
         print("Entered calculate_gold_reward")
-        # print(playerInfo.score)
-        # print(playerInfo.roundScore)
-        # print(stage)
-        # target_score = playerInfo.score  # SMALL=300, BIG=600, BOSS=900
-        # player_score = playerInfo.roundScore  # Total score after player finishes a round
-        # Stage 1: Base Reward
-        # Stage 2: Bonus
-        # Base Case 3: Total
+
         if stage == 0:
-            base_reward = 4
+            curlevel = playerInfo.levelManager.curSubLevel.blind.name
+            print(curlevel)
+            if curlevel == "SMALL":
+                base = 4
+            if curlevel == "BIG":
+                base = 8
+            if curlevel == "BOSS":
+                base = 10
+            return base + self.calculate_gold_reward(playerInfo, stage=1)
         if stage == 1:
-            base_reward = 8
+            target_score = playerInfo.score
+            player_score = playerInfo.roundScore
+            overkill = max(0, (player_score - target_score)//target_score * 5)
+            bonus = min(5, overkill)
+            print(bonus)
+            return bonus + self.calculate_gold_reward(playerInfo, stage=2)
         if stage == 2:
-            base_reward = 10
-        
-        return base_reward
+            return 0
 
 
 
