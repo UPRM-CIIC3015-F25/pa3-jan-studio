@@ -6,7 +6,6 @@ from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
 
-
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
     "Four of a Kind": {"chips": 60, "multiplier": 7, "level": 1},
@@ -27,16 +26,16 @@ class GameState(State):
         self.deck = State.deckManager.shuffleDeck(State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel))
         self.hand = State.deckManager.dealCards(self.deck, 8)
         self.cards = {}
-
+        
         self.jokerDeck = State.deckManager.createJokerDeck()
         self.playerJokers = []
         self.jokers = {}
         # track which jokers activated for the current played hand (used to offset their draw)
         self.activated_jokers = set()
-
+        
         # for joker in self.jokerDeck:
         #     print(joker.name)
-
+        
         self.cardsSelectedList = []
         self.cardsSelectedRect = {}
         self.playedHandNameList = ['']
@@ -187,7 +186,7 @@ class GameState(State):
             self.nextState = "ShopState"
 
             return
-
+        
         # Handle boss level music switching
         bossName = self.playerInfo.levelManager.curSubLevel.bossLevel
         if bossName and not self.isBossActive:
@@ -196,7 +195,7 @@ class GameState(State):
         elif not bossName and self.isBossActive:
             self.isBossActive = False
             self.switchToNormalTheme()
-
+            
         # Handle play hand timing
         if self.playHandActive and self.playHandStartTime > 0:
             curTime = pygame.time.get_ticks()
@@ -536,11 +535,23 @@ class GameState(State):
     #   Avoid any for/while loops — recursion alone must handle the repetition.
     def calculate_gold_reward(self, playerInfo, stage=0):
         print("Entered calculate_gold_reward")
-        print(playerInfo.score)
-        print(playerInfo.roundScore)
-        print(stage)
-        target_score = playerInfo.score  # SMALL=300, BIG=600, BOSS=900
-        player_score = playerInfo.roundScore  # Total score after player finishes a round
+        # print(playerInfo.score)
+        # print(playerInfo.roundScore)
+        # print(stage)
+        # target_score = playerInfo.score  # SMALL=300, BIG=600, BOSS=900
+        # player_score = playerInfo.roundScore  # Total score after player finishes a round
+        # Stage 1: Base Reward
+        # Stage 2: Bonus
+        # Base Case 3: Total
+        if stage == 0:
+            base_reward = 4
+        if stage == 1:
+            base_reward = 8
+        if stage == 2:
+            base_reward = 10
+        
+        return base_reward
+
 
 
 

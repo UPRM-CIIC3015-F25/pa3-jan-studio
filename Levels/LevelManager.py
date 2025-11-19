@@ -61,8 +61,8 @@ class LevelManager():
         #Input: Index of levelsDict
         #Output: Some item of the list of levels for an Ante?
         print("Entered next_unfinished_sublevel")
-        self.curLevel = self.levelsDict[self.p.playerAnte]
-        print(index)
-        print(self.curLevel[index])
-        return self.curLevel[1] #test return
+        if self.levelsDict[self.p.playerAnte][index].finished == True:
+            return self.next_unfinished_sublevel(index+1)
+        else:
+            return self.levelsDict[self.p.playerAnte][index]
     
