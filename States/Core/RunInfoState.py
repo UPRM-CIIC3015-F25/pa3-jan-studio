@@ -107,13 +107,13 @@ class RunInfoState(State):
         self.handNames = ['']
 
         # leveling up logic
-        # for hand in HAND_SCORES:
-        #     for key in self.labelKeys:
-        #         if key == hand:
-        #             if HAND_SCORES[hand]['chips'] != self.labels[hand][0]:
-        #                 self.labels[key][-1] = HAND_SCORES[key]["level"]
-        #                 self.labels[key][0] = HAND_SCORES[key]["chips"]
-        #                 self.labels[key][1] = HAND_SCORES[key]["multiplier"]
+        for hand in HAND_SCORES:
+            for key in self.labelKeys:
+                if key == hand:
+                    if HAND_SCORES[hand]['chips'] != self.labels[hand][0]:
+                        self.labels[key][-1] = HAND_SCORES[key]["level"]
+                        self.labels[key][0] = HAND_SCORES[key]["chips"]
+                        self.labels[key][1] = HAND_SCORES[key]["multiplier"]
 
     def draw(self):
         self.screen.blit(State.screenshot, (0, 0))
