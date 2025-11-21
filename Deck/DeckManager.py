@@ -1,5 +1,6 @@
 import pygame
 import random
+import os
 from Cards.Card import Suit, Rank, Card
 from Cards.Jokers import Jokers
 from Levels.SubLevel import SubLevel
@@ -198,3 +199,38 @@ class DeckManager:
             dealtCards.append(card)
 
         return dealtCards
+    
+_current_skin = None
+# The repo stores artwork under a lowercase `graphics/cards/Planets` folder.
+# Use that folder as the available skin source (planet images are present).
+_skins_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'Skins'))
+
+def get_available_skins():
+    # Returns a list of available skin names without extensions
+    skins = []
+    try:
+        files = [f for f in os.listdir(_skins_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        files.sort()
+        skins = [os.path.splitext(f)[0] for f in files]
+        return skins if skins else ['Default']
+    except Exception:
+        return ['Default']
+
+def load_skin_image(skin_name):
+    #Load and return skin image surface
+    for ext in ('png', 'jpg', 'jpeg'):
+        path = os.path.join(_skins_dir, skin_name + '.' + ext)
+        if os.path.exists(path):
+            try:
+                return pygame.image.load(path).convert_alpha()
+            except Exception:
+                #return pygame.image.load("graphics/cards/Joker_Sprites.png").convert_alpha()
+                break
+    
+    surface = pygame.Surface((200, 200), pygame.SRCALPHA)
+    surface.fill((100, 100, 100, 255))
+    return surface
+
+def set_current_skin(skin_name):
+    global _current_skin
+    _current_skin = skin_name

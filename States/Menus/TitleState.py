@@ -183,6 +183,8 @@ class StartState(State):
                 self.showHelpScreen = True  # show help overlay
             elif self.buttonSkins.collidepoint(mousePosbuttonBar):
                 self.buttonSound.play()
+                self.isFinished = True
+                self.nextState = "SkinsState"
 
         elif events.type == pygame.MOUSEBUTTONUP:
             self.mouseDragging = False

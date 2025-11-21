@@ -7,6 +7,7 @@ from States.Core.RunInfoState import RunInfoState
 from States.Core.PlayerInfo import PlayerInfo
 from States.Menus.ShopState import ShopState
 from States.Menus.LevelSelectState import LevelSelectState
+from States.Menus.SkinsState import SkinsState
 
 if __name__ == "__main__":
     # --- Pygame setup ---
@@ -24,6 +25,7 @@ if __name__ == "__main__":
     player = PlayerInfo()
     gameScreen = GameState(player=player)
     curScreen = startScreen
+    skinScreen = SkinsState()
 
     # --- Main loop ---
     while True:
@@ -50,6 +52,9 @@ if __name__ == "__main__":
                     curScreen.isFinished = False
                     curScreen.nextState = ""
                     curScreen = gameScreen
+            elif curScreen.nextState == "SkinsState":
+                curScreen.isFinished = False
+                curScreen = skinScreen
             elif curScreen.nextState == "GameWinState":
                 curScreen.isFinished = False
                 curScreen = GameWinState()
