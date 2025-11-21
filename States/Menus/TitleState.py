@@ -31,6 +31,7 @@ class StartState(State):
         self.textPlay = self.textFont1.render("PLAY", True, 'white')
         self.textInstructions = self.textFont2.render("HELP", True, 'white')
         self.textQuit = self.textFont1.render("QUIT", True, 'white')
+        self.textSkins = self.textFont2.render("SKINS", True, 'white')
 
         # ----------------------------- Title Card --------------------------------
         self.titleCardImage = pygame.image.load('Graphics/Backgrounds/titleCard.png')
@@ -41,13 +42,14 @@ class StartState(State):
         self.isMouseInCard = False
 
         # ----------------------------- button Bar --------------------------------
-        self.buttonBar = pygame.Rect(self.titleRect.x, 540, 690, 120)
-        self.buttonBarSurface = pygame.Surface((690, 120), pygame.SRCALPHA)
+        self.buttonBar = pygame.Rect(self.titleRect.x, 540, 690, 140)
+        self.buttonBarSurface = pygame.Surface((690, 140), pygame.SRCALPHA)
 
         # Buttons
         self.buttonPlay = pygame.Rect(0, 0, 190, 75)
         self.buttonInstructions = pygame.Rect(0, 0, 180, 50)
         self.buttonQuit = pygame.Rect(0, 0, 200, 75)
+        self.buttonSkins = pygame.Rect(0, 0, 180, 50)
 
         total_width = self.buttonPlay.width + self.buttonInstructions.width + self.buttonQuit.width
         spacing = (self.buttonBar.width - total_width) // 4  # even spacing
@@ -55,9 +57,15 @@ class StartState(State):
         x = spacing
         self.buttonPlay.topleft = (x, (self.buttonBar.height - self.buttonPlay.height) // 2)
         x += self.buttonPlay.width + spacing
-        self.buttonInstructions.topleft = (x, (self.buttonBar.height - self.buttonInstructions.height) // 2)
+        # self.buttonSkins.topleft = (x, (self.buttonBar.height - self.buttonInstructions.height) // 2)
+        # self.buttonInstructions.topleft = (x, (self.buttonBar.height - self.buttonInstructions.height) // 2)
+        skins_instructions = self.buttonBar.height - (self.buttonInstructions.height + self.buttonSkins.height)
+        self.buttonSkins.topleft = (x, skins_instructions * 2)
+        self.buttonInstructions.topleft = (x, (skins_instructions // 3))
+
         x += self.buttonInstructions.width + spacing
         self.buttonQuit.topleft = (x, (self.buttonBar.height - self.buttonQuit.height) // 2)
+        
 
         # ----------------------------- TV Overlay --------------------------------
         self.tvOverlay = pygame.image.load('Graphics/Backgrounds/CRT.png').convert_alpha()
@@ -131,10 +139,12 @@ class StartState(State):
         play_base, play_hover = (30, 144, 255), (0, 191, 255)
         instruct_base, instruct_hover = (255, 140, 0), (255, 165, 0)
         quit_base, quit_hover = (178, 34, 34), (255, 69, 58)
+        skins_base, skins_hover = (70, 200, 100), (50, 160, 80)
 
         draw_button(self.buttonPlay, play_base, play_hover, self.textPlay)
         draw_button(self.buttonInstructions, instruct_base, instruct_hover, self.textInstructions)
         draw_button(self.buttonQuit, quit_base, quit_hover, self.textQuit)
+        draw_button(self.buttonSkins, skins_base, skins_hover, self.textSkins)
 
     # ----------------------------- Breathing Animation for Title ------------------------
     def updateBreathTitle(self):
@@ -171,6 +181,8 @@ class StartState(State):
             elif self.buttonInstructions.collidepoint(mousePosbuttonBar):
                 self.buttonSound.play()
                 self.showHelpScreen = True  # show help overlay
+            elif self.buttonSkins.collidepoint(mousePosbuttonBar):
+                self.buttonSound.play()
 
         elif events.type == pygame.MOUSEBUTTONUP:
             self.mouseDragging = False
