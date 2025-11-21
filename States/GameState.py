@@ -843,14 +843,14 @@ class GameState(State):
             self.activated_jokers.add("Micheal Myers")
         if "Fibonacci" in owned:
             # Each played Ace,2,3,5,8 gives +8 Mult
-            for card in used_cards:
+            for card in self.cardsSelectedList:
                 if card.rank in [Rank.ACE, Rank.TWO, Rank.THREE, Rank.FIVE, Rank.EIGHT]:
                     hand_mult += 8
             self.activated_jokers.add("Fibonacci")
         if "Gauntlet" in owned:
             # +250 Chips, -2 hand size
             self.playerInfo.amountOfHands = max(0 , self.playerInfo.amountOfHands - 2 )
-            hand_chips += 250
+            total_chips += 250
             self.activated_jokers.add("Gauntlet")
         if "Orge" in owned:
             # +3 Mult for each owned Joker (treat as number of jokers owned)
@@ -859,14 +859,14 @@ class GameState(State):
             self.activated_jokers.add("Orge")
         if "Straw Hat" in owned:
             # +100 Chips then -5 chips for every hand already played this round
-            hands_played = 4 - self.playerInfo.amountOfHands
-            total_chips += 100 - (5 * hands_played)
-
+            hands_calc = 4 - self.playerInfo.amountOfHands
+            hands_played = max(0, hands_calc )
+            total_chips += 100 - 5 * hands_played
             self.activated_jokers.add("Straw Hat")
         if "Hog Rider" in owned:
             # +100 Chips if the played hand is a Straight
             if hand_name == "Straight":
-                hand_chips += 100
+                total_chips += 100
             self.activated_jokers.add("Hog Rider")
         if "? Block" in owned:
             # +4 Chips if the played hand used exactly 4 cards
@@ -875,10 +875,10 @@ class GameState(State):
             self.activated_jokers.add("? Block")
         if "Hogwarts" in owned:
             # Each Ace played gives +4 mult and +20 chips
-            for card in used_cards:
+            for card in self.cardsSelectedList:
                 if card.rank == Rank.ACE:
                     hand_mult += 4
-                    hand_chips += 20
+                    total_chips += 20
             self.activated_jokers.add("Hogwarts")
         if "802" in owned and self.playerInfo.amountOfHands == 0:
             # If this is the last hand (amountOfHands == 0
