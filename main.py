@@ -66,9 +66,15 @@ if __name__ == "__main__":
                 curScreen = RunInfoState(curScreen.playedHandNameList)
             elif curScreen.nextState == "ShopState":
                 curScreen.isFinished = False
+                pygame.mixer.music.load("graphics/sounds/shopSong.wav")
+                pygame.mixer.music.set_volume(0.5)
+                pygame.mixer.music.play(-1)
                 curScreen = ShopState(game_state=curScreen)
             elif curScreen.nextState == "LevelSelectState":
                 curScreen.isFinished = False
+                pygame.mixer.music.load("graphics/sounds/mainTheme.mp3")
+                pygame.mixer.music.set_volume(0.3)
+                pygame.mixer.music.play(-1)
                 curScreen = LevelSelectState(playerInfo=player, deckManager=State.deckManager)
             else:
                 exit()
