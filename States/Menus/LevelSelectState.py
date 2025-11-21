@@ -72,6 +72,9 @@ class LevelSelectState(State):
             if self.continueButtonRect.collidepoint(mousePos):
                 # Update level manager to reflect completed sublevel
                 self.playerInfo.levelFinished = False
+
+                self.playerInfo.amountOfHands = 4
+                self.playerInfo.amountOfDiscards = 4
                 
                 # just helper variables to write less LOL
                 lm = self.playerInfo.levelManager
@@ -100,11 +103,14 @@ class LevelSelectState(State):
                     if boss == "The Water":
                         self.playerInfo.amountOfDiscards = 0 #No discards
                     elif boss == "The Manacle":
-                        self.playerInfo.amountOfHands = 3 #-1 hand size
+                        self.playerInfo.amountOfHands -= 1 #-1 hand size
                     elif boss == "The Needle":
                         self.playerInfo.amountOfHands = 1 #Play only 1 hand
                     # 'The Mark', 'The House', 'The Hook' debuffs are already 
                     # handled by DeckManager.py and GameState.py for 'The Hook'
+                    else:
+                        self.playerInfo.amountOfHands = 4
+                        self.playerInfo.amountOfDiscards = 4
                 
                 self.playerInfo.roundScore = 0
                 
