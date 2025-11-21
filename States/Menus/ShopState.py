@@ -414,10 +414,10 @@ class ShopState(State):
                         self.buy_sound.play()
                     elif price > self.playerInfo.playerMoney:
                         print(f"[SHOP] buy: cannot afford planet: price={price}, money={self.playerInfo.playerMoney}")
-                        # self.joker_for_buy = None
-                        # self.buy_rect = None
-                        # self.selected_info = None
-                        # return
+                        self.joker_for_buy = None
+                        self.buy_rect = None
+                        self.selected_info = None
+                        return
                     if joker_obj in self.shop_random_jokers:
                         self.shop_random_jokers.remove(joker_obj)
                     else:
