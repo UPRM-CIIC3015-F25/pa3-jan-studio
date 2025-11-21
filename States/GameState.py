@@ -276,6 +276,14 @@ class GameState(State):
             if self.playHandActive and card in self.cardsSelectedList:
                 continue
             img_to_draw = getattr(card, "scaled_image", card.image)
+            rect = self.cards[card]
+
+            if card.isSelected:
+                glow = pygame.Surface((rect.width+12, rect.height+12), pygame.SRCALPHA)
+                pygame.draw.rect(glow,(255,215,0,120), glow.get_rect(), border_radius=12)
+                glow_rect = glow.get_rect(center = rect.center)
+                State.screen.blit(glow, glow_rect)
+
             State.screen.blit(img_to_draw, self.cards[card])
         self.drawCardTooltip()
 
