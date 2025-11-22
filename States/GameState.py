@@ -50,6 +50,16 @@ class GameState(State):
         self.gameOverSound = pygame.mixer.Sound("Graphics/Sounds/gameEnd.mp3")
         self.gameOverSound.set_volume(0.6)  # adjust loudness if needed
 
+        self.gameOverVoice = pygame.mixer.Sound("Graphics/Sounds/gameOverVoice.wav")
+        self.gameOverVoice.set_volume(0.8)
+
+        self.lastHandSound = pygame.mixer.Sound("Graphics/Sounds/lastHand.wav")
+        self.lastHandSound.set_volume(0.7)
+        self.lastHandWarningPlayed = False
+
+        self.sortSound = pygame.mixer.Sound("Graphics/Sounds/sort.wav")
+        self.sortSound.set_volume(0.6)
+
         # --------------------------------Images----------------------------------------------
         self.backgroundImage = pygame.image.load('Graphics/Backgrounds/gameplayBG.jpg')
         self.background = pygame.transform.scale(self.backgroundImage, (1300, 750))
@@ -147,6 +157,13 @@ class GameState(State):
     def update(self):
         # Always update LevelManager first so win/levelFinished flags are fresh
         self.playerInfo.levelManager.update()
+
+        #-------------last hand warning----------------
+        if self.playerInfo.amountOfHands == 1 and not self.lastHandWarningPlayed:
+            self.lastHandWarningPlayed = True
+            self.lastHandSound.play()
+        elif self.playerInfo.amountOfHands != 1:
+            self.lastHandWarningPlayed = False
 
         # If LevelManager flagged playerWins (no more levels), transition to GameWinState
         if self.playerInfo.levelManager.playerWins:
@@ -249,6 +266,16 @@ class GameState(State):
         self.drawPlayedHandName()
         self.drawDeckPileOverlay()
         self.screen.blit(self.tvOverlay, (0, 0))
+
+        #--------------Last hand warning-----------------
+        if self.playerInfo.amountOfHands == 1:
+            tt = pygame.time.get_ticks()
+            if (tt // 300) % 2 == 0:
+                warning_font = self.playerInfo.textFont1
+                warning_text = warning_font.render("LAST HAND!", True, (255, 255, 0))
+                text_rect = warning_text.get_rect()
+                text_rect.midbottom = (self.centerCardsRect.centerx, self.centerCardsRect.top + 23)
+                self.screen.blit(warning_text, text_rect)
 
     def switchToBossTheme(self):
         # Switch background music to the boss theme using the music channel
@@ -492,9 +519,11 @@ class GameState(State):
                     self.playHand()
 
             if self.sortRankRect.collidepoint(mousePosPlayerOpcions):
+                self.sortSound.play()
                 self.SortCards(sort_by="rank")
 
             if self.sortSuitRect.collidepoint(mousePosPlayerOpcions):
+                self.sortSound.play()
                 self.SortCards(sort_by="suit")
 
             if self.playerInfo.runInfoRect.collidepoint(
@@ -668,7 +697,20 @@ class GameState(State):
                     pygame.display.update()
                     pygame.time.wait(80)
 
-                pygame.time.wait(1200)
+                pygame.time.wait(50)
+
+                self.gameOverVoice.play()
+                font = pygame.font.Font("Graphics/Text/m6x11.ttf", 120)
+                text = font.render("GAME OVER", True, "white")
+
+                overlay = pygame.Surface((1300, 750))
+                overlay.fill((0,0,0))
+                overlay.set_alpha(200)
+                self.screen.blit(overlay, (0,0))
+                self.screen.blit(text, text.get_rect(center=(650, 375)))
+                pygame.display.update()
+
+                pygame.time.wait(2000)
                 pygame.quit()
 
         self.playerInfo.amountOfHands -= 1
