@@ -5,6 +5,7 @@ from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
+from Cards.Jokers import *
 
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
@@ -357,6 +358,11 @@ class GameState(State):
                 rect = rect.move(0, 50)
 
             self.jokers[joker] = rect
+            #BONUS draw variant color
+            if joker.variant and joker.variant.color:
+                glow_rect = pygame.Rect(rect.x - 5, rect.y - 5, rect.width + 10, rect.height + 10)
+                pygame.draw.rect(self.screen, joker.variant.color, glow_rect, border_radius=8, width=4)
+
             State.screen.blit(scaled, rect)
 
         # count/title text (keeps old placement just under container)
@@ -886,6 +892,19 @@ class GameState(State):
             # amount
             total_chips *= 2
             self.activated_jokers.add("802")
+
+        #BONUS ADD VARIANTS:
+        # Build joker objects list in the exact order of self.playerJokers
+        player_joker_objs = []
+        for name in self.playerJokers:
+            for joker in self.jokerDeck:
+                if joker.name == name:
+                    player_joker_objs.append(joker)
+                    break
+        for joker in player_joker_objs:
+            if joker.name in self.activated_jokers:
+                total_chips += joker.get_chips()
+                hand_mult += joker.get_mult()
 
         procrastinate = False
 
