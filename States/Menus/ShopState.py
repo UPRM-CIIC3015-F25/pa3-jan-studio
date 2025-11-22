@@ -277,9 +277,11 @@ class ShopState(State):
             pos_x = start_x + i * spacing
 
             #BONUS: applying different colors to variants
-            if isinstance(card, Jokers) and card.variant.color:
-                pygame.draw.rect(self.shopSurface, card.variant.color, (pos_x - 5, pos_y - 5, w + 10, h + 10), 4, border_radius=6)
-
+            if isinstance(card, Jokers) and getattr(card.variant, "color", None) is not None:
+                glow = pygame.Surface((w + 8, h + 8), pygame.SRCALPHA)
+                pygame.draw.rect(glow, (255, 215, 0, 120), glow.get_rect(), border_radius=12)
+                glow_rect = glow.get_rect(center=(pos_x + w // 2, pos_y + h // 2))
+                self.shopSurface.blit(glow, glow_rect)
             self.shopSurface.blit(scaled, (pos_x, pos_y))
 
             rect = pygame.Rect(self.shopPos[0] + pos_x, self.shopPos[1] + pos_y, w, h)
