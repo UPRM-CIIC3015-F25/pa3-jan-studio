@@ -50,7 +50,11 @@ class GameState(State):
         self.gameOverSound.set_volume(0.6)  # adjust loudness if needed
 
         self.gameOverVoice = pygame.mixer.Sound("Graphics/Sounds/gameOverVoice.wav")
-        self.gameOverSound.set_volume(0.8)
+        self.gameOverVoice.set_volume(0.8)
+
+        self.lastHandSound = pygame.mixer.Sound("Graphics/Sounds/lastHand.wav")
+        self.lastHandSound.set_volume(0.7)
+        self.lastHandWarningPlayed = False
 
         # --------------------------------Images----------------------------------------------
         self.backgroundImage = pygame.image.load('Graphics/Backgrounds/gameplayBG.jpg')
@@ -149,6 +153,13 @@ class GameState(State):
     def update(self):
         # Always update LevelManager first so win/levelFinished flags are fresh
         self.playerInfo.levelManager.update()
+
+        #-------------last hand warning----------------
+        if self.playerInfo.amountOfHands == 1 and not self.lastHandWarningPlayed:
+            self.lastHandWarningPlayed = True
+            self.lastHandSound.play()
+        elif self.playerInfo.amountOfHands != 1:
+            self.lastHandWarningPlayed = False
 
         # If LevelManager flagged playerWins (no more levels), transition to GameWinState
         if self.playerInfo.levelManager.playerWins:
@@ -251,6 +262,16 @@ class GameState(State):
         self.drawPlayedHandName()
         self.drawDeckPileOverlay()
         self.screen.blit(self.tvOverlay, (0, 0))
+
+        #--------------Last hand warning-----------------
+        if self.playerInfo.amountOfHands == 1:
+            tt = pygame.time.get_ticks()
+            if (tt // 300) % 2 == 0:
+                warning_font = self.playerInfo.textFont1
+                warning_text = warning_font.render("LAST HAND!", True, (255, 255, 0))
+                text_rect = warning_text.get_rect()
+                text_rect.midbottom = (self.centerCardsRect.centerx, self.centerCardsRect.top + 23)
+                self.screen.blit(warning_text, text_rect)
 
     def switchToBossTheme(self):
         # Switch background music to the boss theme using the music channel
