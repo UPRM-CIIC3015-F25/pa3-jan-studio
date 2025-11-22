@@ -1,5 +1,6 @@
 import pygame
 import random
+import os
 from States.Menus.DebugState import DebugState
 from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
@@ -33,6 +34,8 @@ class GameState(State):
         self.jokers = {}
         # track which jokers activated for the current played hand (used to offset their draw)
         self.activated_jokers = set()
+
+        self._applied_skin = State.deckManager.get_current_skin_path()
         
         # for joker in self.jokerDeck:
         #     print(joker.name)
@@ -155,6 +158,9 @@ class GameState(State):
         destSurface.blit(shade, rect.topleft)
 
     def update(self):
+        current_skin = State.deckManager.get_current_skin_path()
+        if getattr(self, '_applied_skin', None) != current_skin:
+            self.apply_skin_images()
         # Always update LevelManager first so win/levelFinished flags are fresh
         self.playerInfo.levelManager.update()
 
@@ -985,7 +991,14 @@ class GameState(State):
 
         start_x, start_y, spacing = 20, 20, 95
         for i, card in enumerate(self.cardsSelectedList):
-            w, h = card.scaled_image.get_width(), card.scaled_image.get_height()
+            # Use the scaled image if available, otherwise fall back to the card's base image.
+            img = getattr(card, 'scaled_image', None)
+            if img is None:
+                img = getattr(card, 'image', None)
+            if img is None:
+                # If no image is available for this card, skip placing its rect
+                continue
+            w, h = img.get_width(), img.get_height()
             self.cardsSelectedRect[card] = pygame.Rect(start_x + i * spacing, start_y, w, h)
 
     # TODO (TASK 4) - The function should remove one selected card from the player's hand at a time, calling itself
@@ -1014,3 +1027,41 @@ class GameState(State):
         new_card = self.deck.pop()
         self.hand.append(new_card)
         self.discardCards(removeFromHand)
+
+    def apply_skin_images(self):
+        # Build new card image mapping using current sublevel
+        try:
+            new_card_images = State.deckManager.load_card_images(self.playerInfo.levelManager.curSubLevel)
+        except Exception:
+            # fallback: try without sublevel
+            new_card_images = State.deckManager.load_card_images(None)
+
+        # Update every Card in deck and hand
+        for card in list(self.deck):
+            img = new_card_images.get((card.suit, card.rank))
+            if img is not None:
+                card.image = img
+                # remove any stale scaled_image so it will be regenerated where needed
+                if hasattr(card, 'scaled_image'):
+                    delattr(card, 'scaled_image') if hasattr(card, 'scaled_image') else None
+
+        for card in list(self.hand):
+            img = new_card_images.get((card.suit, card.rank))
+            if img is not None:
+                card.image = img
+                if hasattr(card, 'scaled_image'):
+                    delattr(card, 'scaled_image') if hasattr(card, 'scaled_image') else None
+
+        
+        try:
+            new_joker_images = State.deckManager.loadJokerImages()
+            for joker in self.jokerDeck:
+                img = new_joker_images.get(joker.name)
+                if img is not None:
+                    joker.image = img
+                    if hasattr(joker, 'scaled_image'):
+                        delattr(joker, 'scaled_image') if hasattr(joker, 'scaled_image') else None
+        except Exception:
+            pass
+
+        self._applied_skin = State.deckManager.get_current_skin_path()
