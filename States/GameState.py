@@ -402,7 +402,14 @@ class GameState(State):
         # balatro_card = pygame.image.load(DeckManager.current_skin_name).convert_alpha()
         # card_width, card_height = 70, 94
         # card_img = balatro_card.subsurface(pygame.Rect(0, 0, card_width, card_height))
-        balatro_sheet = DeckManager.load_card_images(DeckManager.get_current_skin_path())
+        try:
+            sheet_path = State.deckManager.get_current_skin_path()
+            balatro_sheet = pygame.image.load(sheet_path).convert_alpha()
+        except Exception:
+            # fallback to packaged default sprite sheet (normalized path)
+            fallback = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'skins', 'Poker_Sprites.png'))
+            balatro_sheet = pygame.image.load(fallback).convert_alpha()
+
         card_width, card_height = 70, 94
         card_img = balatro_sheet.subsurface(pygame.Rect(0, 0, card_width, card_height))
 

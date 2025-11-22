@@ -11,6 +11,8 @@ _current_skin_path = os.path.normpath(
     )
 )
 
+_skins_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'skins'))
+
 def get_current_skin_path():
     return _current_skin_path
 
@@ -32,7 +34,9 @@ class DeckManager:
         ]
 
         # --- Current Skin ---
-        self.current_skin_name = "graphics\cards\skins\Poker_Sprites.png"
+        self.current_skin_path = os.path.normpath(
+            os.path.join(os.path.dirname(__file__), "..", "graphics", "cards", "skins", "Poker_Sprites.png"))
+        self.skins_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'skins'))
 
     # ---------- Helpers ----------
     def _scaleToHeightIntegerish(self, surf: pygame.Surface, targetH: int) -> pygame.Surface:
@@ -81,7 +85,7 @@ class DeckManager:
         Load 52 card faces at their original resolution (70x94),
         optionally applying 'The Mark' modifications if the boss requires it.
         """
-        sheet_path = get_current_skin_path()
+        sheet_path = self.current_skin_path
         try:
             sheet = pygame.image.load(sheet_path).convert_alpha()
         except Exception:
@@ -126,7 +130,16 @@ class DeckManager:
         uniformly to the target height. Automatically adjusts slicing
         to prevent out-of-bounds errors.
         """
-        sheet = pygame.image.load(self.current_skin_name).convert_alpha()
+        joker_sheet_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'Joker_Sprites.png'))
+        try:
+            sheet = pygame.image.load(joker_sheet_path).convert_alpha()
+        except Exception:
+            # Fall back to the active skin sheet if the dedicated joker sheet is missing
+            try:
+                sheet = pygame.image.load(self.current_skin_path).convert_alpha()
+            except Exception:
+                # As a last resort, raise so callers can handle the error
+                raise
         sheetW, sheetH = sheet.get_width(), sheet.get_height()
 
         # expected layout is 5 columns x 2 rows — compute cell size from sheet
@@ -230,41 +243,71 @@ class DeckManager:
 
         return dealtCards
     
-_current_skin = None
-# The repo stores artwork under a lowercase `graphics/cards/Planets` folder.
-# Use that folder as the available skin source (planet images are present).
-_skins_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'skins'))
+    def get_current_skin_path(self) -> str:
+        return self.current_skin_path
+    
+    def set_current_skin(self, skin_name: str) -> bool:
+        """Instance setter: search self.skins_dir for the named skin and set it.
+        Returns True on success, False if not found or validation failed."""
+        for ext in (".png", ".jpg", ".jpeg"):
+            candidate = os.path.normpath(os.path.join(self.skins_dir, skin_name + ext))
+            if os.path.exists(candidate):
+                # Attempt a quick validation by trying to load the sheet
+                prev = getattr(self, 'current_skin_path', None)
+                try:
+                    _ = pygame.image.load(candidate).convert_alpha()
+                    # validation succeeded — apply
+                    self.current_skin_path = candidate
+                    set_current_skin_path(candidate)
+                    # clear any cached images so loaders will rebuild
+                    self._card_images_cache = None
+                    self._joker_images_cache = None
+                    return True
+                except Exception:
+                    # validation failed; restore previous and continue searching
+                    if prev is not None:
+                        self.current_skin_path = prev
+                    continue
+        return False
+    
+
+
 
 def get_available_skins():
-    # Returns a list of available skin names without extensions
-    skins = []
+    """Return available skin names (filenames without extension) from the skins folder."""
     try:
         files = [f for f in os.listdir(_skins_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
         files.sort()
-        skins = [os.path.splitext(f)[0] for f in files]
-        return skins if skins else ['Default']
+        return [os.path.splitext(f)[0] for f in files] if files else ['Default']
     except Exception:
         return ['Default']
 
+
 def load_skin_image(skin_name):
-    #Load and return skin image surface
+    """Load and return a Surface for the named skin (preview). Falls back to the current skin or a placeholder."""
     for ext in ('png', 'jpg', 'jpeg'):
         path = os.path.join(_skins_dir, skin_name + '.' + ext)
         if os.path.exists(path):
             try:
                 return pygame.image.load(path).convert_alpha()
             except Exception:
-                #return pygame.image.load("graphics/cards/Joker_Sprites.png").convert_alpha()
                 break
-    
-    surface = pygame.Surface((200, 200), pygame.SRCALPHA)
-    surface.fill((100, 100, 100, 255))
-    return surface
+
+    # fallback to currently-selected skin
+    try:
+        return pygame.image.load(_current_skin_path).convert_alpha()
+    except Exception:
+        placeholder = pygame.Surface((200, 200), pygame.SRCALPHA)
+        placeholder.fill((100, 100, 100, 255))
+        return placeholder
+
 
 def set_current_skin(skin_name):
-    for ext in (".png", ".jpg", ".jpeg"):
-        candidate = os.path.join(_skins_dir, skin_name + ext)
-        candidate = os.path.normpath(candidate)
+    """Module-level setter: set active skin by name (filename without extension).
+    Returns True on success, False on failure.
+    """
+    for ext in ('.png', '.jpg', '.jpeg'):
+        candidate = os.path.normpath(os.path.join(_skins_dir, skin_name + ext))
         if os.path.exists(candidate):
             set_current_skin_path(candidate)
             return True

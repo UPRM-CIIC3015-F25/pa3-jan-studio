@@ -42,7 +42,7 @@ class SkinsState(State):
                 self.selected_skin_index = (self.selected_skin_index - 1) % len(self.available_skins)
             elif self.select_button.collidepoint(mouse_pos):
                 selected_skin = self.available_skins[self.selected_skin_index]
-                success = Deck.DeckManager.set_current_skin(selected_skin)
+                success = State.deckManager.set_current_skin(selected_skin)
                 if success:
                     self.isFinished = True
                     self.nextState = "StartState"
@@ -68,7 +68,7 @@ class SkinsState(State):
 
         # Draw current skin preview
         current_skin = self.available_skins[self.selected_skin_index]
-        skin_image = Deck.DeckManager.load_skin_image(current_skin)
+        skin_image = Deck.DeckManager.load_skin_image(current_skin)   # returns a pygame.Surface
         skin_rect = skin_image.get_rect(center=(650, 350))
         screen.blit(skin_image, skin_rect)
 
