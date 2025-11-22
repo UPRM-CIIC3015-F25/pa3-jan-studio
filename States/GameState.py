@@ -5,7 +5,6 @@ from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
-from Deck.DeckManager import  DeckManager
 
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
@@ -49,6 +48,16 @@ class GameState(State):
 
         self.gameOverSound = pygame.mixer.Sound("Graphics/Sounds/gameEnd.mp3")
         self.gameOverSound.set_volume(0.6)  # adjust loudness if needed
+
+        self.gameOverVoice = pygame.mixer.Sound("Graphics/Sounds/gameOverVoice.wav")
+        self.gameOverVoice.set_volume(0.8)
+
+        self.lastHandSound = pygame.mixer.Sound("Graphics/Sounds/lastHand.wav")
+        self.lastHandSound.set_volume(0.7)
+        self.lastHandWarningPlayed = False
+
+        self.sortSound = pygame.mixer.Sound("Graphics/Sounds/sort.wav")
+        self.sortSound.set_volume(0.6)
 
         # --------------------------------Images----------------------------------------------
         self.backgroundImage = pygame.image.load('Graphics/Backgrounds/gameplayBG.jpg')
@@ -147,6 +156,13 @@ class GameState(State):
     def update(self):
         # Always update LevelManager first so win/levelFinished flags are fresh
         self.playerInfo.levelManager.update()
+
+        #-------------last hand warning----------------
+        if self.playerInfo.amountOfHands == 1 and not self.lastHandWarningPlayed:
+            self.lastHandWarningPlayed = True
+            self.lastHandSound.play()
+        elif self.playerInfo.amountOfHands != 1:
+            self.lastHandWarningPlayed = False
 
         # If LevelManager flagged playerWins (no more levels), transition to GameWinState
         if self.playerInfo.levelManager.playerWins:
@@ -249,6 +265,16 @@ class GameState(State):
         self.drawPlayedHandName()
         self.drawDeckPileOverlay()
         self.screen.blit(self.tvOverlay, (0, 0))
+
+        #--------------Last hand warning-----------------
+        if self.playerInfo.amountOfHands == 1:
+            tt = pygame.time.get_ticks()
+            if (tt // 300) % 2 == 0:
+                warning_font = self.playerInfo.textFont1
+                warning_text = warning_font.render("LAST HAND!", True, (255, 255, 0))
+                text_rect = warning_text.get_rect()
+                text_rect.midbottom = (self.centerCardsRect.centerx, self.centerCardsRect.top + 23)
+                self.screen.blit(warning_text, text_rect)
 
     def switchToBossTheme(self):
         # Switch background music to the boss theme using the music channel
@@ -358,6 +384,11 @@ class GameState(State):
                 rect = rect.move(0, 50)
 
             self.jokers[joker] = rect
+            #BONUS draw variant color
+            if joker.variant and joker.variant.color:
+                glow_rect = pygame.Rect(rect.x - 5, rect.y - 5, rect.width + 10, rect.height + 10)
+                pygame.draw.rect(self.screen, joker.variant.color, glow_rect, border_radius=8, width=4)
+
             State.screen.blit(scaled, rect)
 
         # count/title text (keeps old placement just under container)
@@ -491,9 +522,11 @@ class GameState(State):
                     self.playHand()
 
             if self.sortRankRect.collidepoint(mousePosPlayerOpcions):
+                self.sortSound.play()
                 self.SortCards(sort_by="rank")
 
             if self.sortSuitRect.collidepoint(mousePosPlayerOpcions):
+                self.sortSound.play()
                 self.SortCards(sort_by="suit")
 
             if self.playerInfo.runInfoRect.collidepoint(
@@ -667,7 +700,20 @@ class GameState(State):
                     pygame.display.update()
                     pygame.time.wait(80)
 
-                pygame.time.wait(1200)
+                pygame.time.wait(50)
+
+                self.gameOverVoice.play()
+                font = pygame.font.Font("Graphics/Text/m6x11.ttf", 120)
+                text = font.render("GAME OVER", True, "white")
+
+                overlay = pygame.Surface((1300, 750))
+                overlay.fill((0,0,0))
+                overlay.set_alpha(200)
+                self.screen.blit(overlay, (0,0))
+                self.screen.blit(text, text.get_rect(center=(650, 375)))
+                pygame.display.update()
+
+                pygame.time.wait(2000)
                 pygame.quit()
 
         self.playerInfo.amountOfHands -= 1
@@ -848,14 +894,14 @@ class GameState(State):
             self.activated_jokers.add("Micheal Myers")
         if "Fibonacci" in owned:
             # Each played Ace,2,3,5,8 gives +8 Mult
-            for card in used_cards:
+            for card in self.cardsSelectedList:
                 if card.rank in [Rank.ACE, Rank.TWO, Rank.THREE, Rank.FIVE, Rank.EIGHT]:
                     hand_mult += 8
             self.activated_jokers.add("Fibonacci")
         if "Gauntlet" in owned:
             # +250 Chips, -2 hand size
             self.playerInfo.amountOfHands = max(0 , self.playerInfo.amountOfHands - 2 )
-            hand_chips += 250
+            total_chips += 250
             self.activated_jokers.add("Gauntlet")
         if "Orge" in owned:
             # +3 Mult for each owned Joker (treat as number of jokers owned)
@@ -864,14 +910,14 @@ class GameState(State):
             self.activated_jokers.add("Orge")
         if "Straw Hat" in owned:
             # +100 Chips then -5 chips for every hand already played this round
-            hands_played = 4 - self.playerInfo.amountOfHands
-            total_chips += 100 - (5 * hands_played)
-
+            hands_calc = 4 - self.playerInfo.amountOfHands
+            hands_played = max(0, hands_calc )
+            total_chips += 100 - 5 * hands_played
             self.activated_jokers.add("Straw Hat")
         if "Hog Rider" in owned:
             # +100 Chips if the played hand is a Straight
             if hand_name == "Straight":
-                hand_chips += 100
+                total_chips += 100
             self.activated_jokers.add("Hog Rider")
         if "? Block" in owned:
             # +4 Chips if the played hand used exactly 4 cards
@@ -880,10 +926,10 @@ class GameState(State):
             self.activated_jokers.add("? Block")
         if "Hogwarts" in owned:
             # Each Ace played gives +4 mult and +20 chips
-            for card in used_cards:
+            for card in self.cardsSelectedList:
                 if card.rank == Rank.ACE:
                     hand_mult += 4
-                    hand_chips += 20
+                    total_chips += 20
             self.activated_jokers.add("Hogwarts")
         if "802" in owned and self.playerInfo.amountOfHands == 0:
             # If this is the last hand (amountOfHands == 0
@@ -891,6 +937,19 @@ class GameState(State):
             # amount
             total_chips *= 2
             self.activated_jokers.add("802")
+
+        #BONUS ADD VARIANTS:
+        # Build joker objects list in the exact order of self.playerJokers
+        player_joker_objs = []
+        for name in self.playerJokers:
+            for joker in self.jokerDeck:
+                if joker.name == name:
+                    player_joker_objs.append(joker)
+                    break
+        for joker in player_joker_objs:
+            if joker.name in self.activated_jokers:
+                total_chips += joker.get_chips()
+                hand_mult += joker.get_mult()
 
         procrastinate = False
 

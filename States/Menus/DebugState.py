@@ -141,4 +141,4 @@ class DebugState(State):
                 print("[DEBUG] Adding 1$ to player money...")
                 if self.game_state:
                     player = self.game_state.playerInfo
-                    player.playerMoney += 1
+                    player.playerMoney += 10

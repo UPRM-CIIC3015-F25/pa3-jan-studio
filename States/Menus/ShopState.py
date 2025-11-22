@@ -5,6 +5,7 @@ from Cards.Planets import PLANETS, PlanetCard
 from Cards.Jokers import Jokers
 from States.GameState import HAND_SCORES
 from States.Core.StateClass import State
+from Cards.Jokers import *
 
 class ShopState(State):
 
@@ -274,6 +275,11 @@ class ShopState(State):
             w = int(img.get_width() * (h / img.get_height()))
             scaled = pygame.transform.scale(img, (w, h))
             pos_x = start_x + i * spacing
+
+            #BONUS: applying different colors to variants
+            if isinstance(card, Jokers) and card.variant.color:
+                pygame.draw.rect(self.shopSurface, card.variant.color, (pos_x - 5, pos_y - 5, w + 10, h + 10), 4, border_radius=6)
+
             self.shopSurface.blit(scaled, (pos_x, pos_y))
 
             rect = pygame.Rect(self.shopPos[0] + pos_x, self.shopPos[1] + pos_y, w, h)
@@ -324,6 +330,9 @@ class ShopState(State):
             picks = [candidates[0]]
         else:
             picks = []
+        # BONUS implement variants
+        for joker in picks:
+            joker.variant = select_variant()
 
         # append planet if available
         if p:
