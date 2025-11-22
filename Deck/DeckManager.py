@@ -5,6 +5,20 @@ from Cards.Card import Suit, Rank, Card
 from Cards.Jokers import Jokers
 from Levels.SubLevel import SubLevel
 
+_current_skin_path = os.path.normpath(
+    os.path.join(
+        os.path.dirname(__file__), "..", "graphics", "cards", "skins", "Poker_Sprites.png"
+    )
+)
+
+def get_current_skin_path():
+    return _current_skin_path
+
+def set_current_skin_path(path):
+    global _current_skin_path
+    _current_skin_path = os.path.normpath(path)
+
+
 class DeckManager:
     def __init__(self):
         self.resetDeck = False
@@ -16,6 +30,10 @@ class DeckManager:
             "Fibonacci", "Michael Myers", "? Block", "Hogwarts", "StrawHat",
             "802", "Ogre", "Hog Rider", "Gauntlet", "The Joker"
         ]
+
+        # --- Current Skin ---
+        self.current_skin_name = "graphics\cards\skins\Poker_Sprites.png"
+
     # ---------- Helpers ----------
     def _scaleToHeightIntegerish(self, surf: pygame.Surface, targetH: int) -> pygame.Surface:
         h = surf.get_height()
@@ -63,7 +81,16 @@ class DeckManager:
         Load 52 card faces at their original resolution (70x94),
         optionally applying 'The Mark' modifications if the boss requires it.
         """
-        sheet = pygame.image.load('Graphics/Cards/Poker_Sprites.png').convert_alpha()
+        sheet_path = get_current_skin_path()
+        try:
+            sheet = pygame.image.load(sheet_path).convert_alpha()
+        except Exception:
+            fallback = os.path.normpath(
+                os.path.join(
+                    os.path.dirname(__file__), "..", "graphics", "cards", "skins", "Poker_Sprites.png"
+                )
+            )
+            sheet = pygame.image.load(fallback).convert_alpha()
 
         cardImages = {}
         useMark = False
@@ -99,7 +126,7 @@ class DeckManager:
         uniformly to the target height. Automatically adjusts slicing
         to prevent out-of-bounds errors.
         """
-        sheet = pygame.image.load('Graphics/Cards/Joker_Sprites.png').convert_alpha()
+        sheet = pygame.image.load(self.current_skin_name).convert_alpha()
         sheetW, sheetH = sheet.get_width(), sheet.get_height()
 
         # expected layout is 5 columns x 2 rows — compute cell size from sheet
@@ -187,7 +214,10 @@ class DeckManager:
 
         houseImage = None
         if bossName == "The House":
-            sheet = pygame.image.load('Graphics/Cards/Poker_Sprites.png').convert_alpha()
+            try:
+                sheet = pygame.image.load(get_current_skin_path()).convert_alpha()
+            except Exception:
+                sheet = pygame.image.load(os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "graphics", "cards", "skins", "Poker_Sprites.png"))).convert_alpha()
             houseImage = sheet.subsurface(pygame.Rect(0, 0, self.srcCardW, self.srcCardH)).copy()
 
         take = min(numCards, len(deck))
@@ -203,7 +233,7 @@ class DeckManager:
 _current_skin = None
 # The repo stores artwork under a lowercase `graphics/cards/Planets` folder.
 # Use that folder as the available skin source (planet images are present).
-_skins_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'Skins'))
+_skins_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'graphics', 'cards', 'skins'))
 
 def get_available_skins():
     # Returns a list of available skin names without extensions
@@ -232,5 +262,10 @@ def load_skin_image(skin_name):
     return surface
 
 def set_current_skin(skin_name):
-    global _current_skin
-    _current_skin = skin_name
+    for ext in (".png", ".jpg", ".jpeg"):
+        candidate = os.path.join(_skins_dir, skin_name + ext)
+        candidate = os.path.normpath(candidate)
+        if os.path.exists(candidate):
+            set_current_skin_path(candidate)
+            return True
+    return False

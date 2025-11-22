@@ -108,9 +108,6 @@ class LevelSelectState(State):
                         self.playerInfo.amountOfHands = 1 #Play only 1 hand
                     # 'The Mark', 'The House', 'The Hook' debuffs are already 
                     # handled by DeckManager.py and GameState.py for 'The Hook'
-                    else:
-                        self.playerInfo.amountOfHands = 4
-                        self.playerInfo.amountOfDiscards = 4
                 
                 self.playerInfo.roundScore = 0
                 

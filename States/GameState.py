@@ -5,6 +5,7 @@ from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
 from States.Core.PlayerInfo import PlayerInfo
 from Deck.HandEvaluator import evaluate_hand
+from Deck.DeckManager import  DeckManager
 
 HAND_SCORES = {
     "Straight Flush": {"chips": 100, "multiplier": 8, "level": 1},
@@ -366,9 +367,13 @@ class GameState(State):
     def drawDeckPile(self):
         pileContainer = pygame.Surface(self.pileContainer.size, pygame.SRCALPHA)
         pygame.draw.rect(pileContainer, (0, 0, 0, 120), pileContainer.get_rect())
-        balatro_card = pygame.image.load('Graphics/Cards/Poker_Sprites.png').convert_alpha()
+        # balatro_card = pygame.image.load(DeckManager.current_skin_name).convert_alpha()
+        # card_width, card_height = 70, 94
+        # card_img = balatro_card.subsurface(pygame.Rect(0, 0, card_width, card_height))
+        balatro_sheet = DeckManager.load_card_images(DeckManager.get_current_skin_path())
         card_width, card_height = 70, 94
-        card_img = balatro_card.subsurface(pygame.Rect(0, 0, card_width, card_height))
+        card_img = balatro_sheet.subsurface(pygame.Rect(0, 0, card_width, card_height))
+
         scaled_card = pygame.transform.scale(card_img, self.pileContainer.size)
         pileContainer.blit(scaled_card, (0, 0))
         self.screen.blit(pileContainer, self.pileContainer.topleft)

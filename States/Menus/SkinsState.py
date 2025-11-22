@@ -31,6 +31,7 @@ class SkinsState(State):
         self.next_button = pygame.Rect(1100, 650, 150, 50)
         self.prev_button = pygame.Rect(50, 650, 150, 50)
         self.select_button = pygame.Rect(550, 650, 200, 50)
+
     
     def userInput(self, events):
         if events.type == pygame.MOUSEBUTTONDOWN:
@@ -41,9 +42,18 @@ class SkinsState(State):
                 self.selected_skin_index = (self.selected_skin_index - 1) % len(self.available_skins)
             elif self.select_button.collidepoint(mouse_pos):
                 selected_skin = self.available_skins[self.selected_skin_index]
-                Deck.DeckManager.set_current_skin(selected_skin)
-                self.isFinished = True
-                self.nextState = "StartState"
+                success = Deck.DeckManager.set_current_skin(selected_skin)
+                if success:
+                    self.isFinished = True
+                    self.nextState = "StartState"
+                else:
+                    print(f"Failed to set wanted skin: {selected_skin}")
+                    pass
+                
+                
+                # Deck.DeckManager.set_current_skin(selected_skin)
+                # self.isFinished = True
+                # self.nextState = "StartState"
     
     def update(self):
         self.draw()
