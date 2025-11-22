@@ -56,6 +56,9 @@ class GameState(State):
         self.lastHandSound.set_volume(0.7)
         self.lastHandWarningPlayed = False
 
+        self.sortSound = pygame.mixer.Sound("Graphics/Sounds/sort.wav")
+        self.sortSound.set_volume(0.6)
+
         # --------------------------------Images----------------------------------------------
         self.backgroundImage = pygame.image.load('Graphics/Backgrounds/gameplayBG.jpg')
         self.background = pygame.transform.scale(self.backgroundImage, (1300, 750))
@@ -510,9 +513,11 @@ class GameState(State):
                     self.playHand()
 
             if self.sortRankRect.collidepoint(mousePosPlayerOpcions):
+                self.sortSound.play()
                 self.SortCards(sort_by="rank")
 
             if self.sortSuitRect.collidepoint(mousePosPlayerOpcions):
+                self.sortSound.play()
                 self.SortCards(sort_by="suit")
 
             if self.playerInfo.runInfoRect.collidepoint(
