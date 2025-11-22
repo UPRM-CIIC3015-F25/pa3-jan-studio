@@ -49,6 +49,9 @@ class GameState(State):
         self.gameOverSound = pygame.mixer.Sound("Graphics/Sounds/gameEnd.mp3")
         self.gameOverSound.set_volume(0.6)  # adjust loudness if needed
 
+        self.gameOverVoice = pygame.mixer.Sound("Graphics/Sounds/gameOverVoice.wav")
+        self.gameOverSound.set_volume(0.8)
+
         # --------------------------------Images----------------------------------------------
         self.backgroundImage = pygame.image.load('Graphics/Backgrounds/gameplayBG.jpg')
         self.background = pygame.transform.scale(self.backgroundImage, (1300, 750))
@@ -662,7 +665,20 @@ class GameState(State):
                     pygame.display.update()
                     pygame.time.wait(80)
 
-                pygame.time.wait(1200)
+                pygame.time.wait(50)
+
+                self.gameOverVoice.play()
+                font = pygame.font.Font("Graphics/Text/m6x11.ttf", 120)
+                text = font.render("GAME OVER", True, "white")
+
+                overlay = pygame.Surface((1300, 750))
+                overlay.fill((0,0,0))
+                overlay.set_alpha(200)
+                self.screen.blit(overlay, (0,0))
+                self.screen.blit(text, text.get_rect(center=(650, 375)))
+                pygame.display.update()
+
+                pygame.time.wait(2000)
                 pygame.quit()
 
         self.playerInfo.amountOfHands -= 1
